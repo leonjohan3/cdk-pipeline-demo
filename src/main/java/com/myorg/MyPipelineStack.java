@@ -3,8 +3,10 @@ package com.myorg;
 import java.util.Arrays;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.StageProps;
 import software.amazon.awscdk.pipelines.CodePipeline;
 import software.amazon.awscdk.pipelines.CodePipelineSource;
+import software.amazon.awscdk.pipelines.ManualApprovalStep;
 import software.amazon.awscdk.pipelines.ShellStep;
 import software.constructs.Construct;
 
@@ -24,5 +26,10 @@ public class MyPipelineStack extends Stack {
                 .commands(Arrays.asList("npm install -g aws-cdk", "cdk synth"))
                 .build())
             .build();
+
+        final var stage = pipeline.addStage(new MyPipelineAppStage(this, "test", StageProps.builder()
+            .build()));
+
+        stage.addPost(new ManualApprovalStep("approval"));
     }
 }
